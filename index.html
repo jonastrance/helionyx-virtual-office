@@ -3,68 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helionyx Virtual Office - Production Engine v1.0</title>
+    <title>Helionyx Digital Property - Production v1.5</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; background-color: #000; overflow: hidden; font-family: 'Inter', sans-serif; }
-        #nav-ui {
+        body { margin: 0; background-color: #000211; overflow: hidden; font-family: 'Inter', sans-serif; color: #fff; }
+        
+        #ui-layer {
             position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 20px;
+            inset: 0;
+            pointer-events: none;
             z-index: 100;
         }
-        button {
-            background: rgba(255, 140, 0, 0.1);
-            border: 1px solid #FF8C00;
+
+        #nav-header {
+            position: absolute;
+            top: 40px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 60px;
+            box-sizing: border-box;
+        }
+
+        .brand-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 24px;
             color: #FF8C00;
-            padding: 12px 24px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(255, 140, 0, 0.5);
+        }
+
+        #nav-menu {
+            display: flex;
+            gap: 40px;
+            pointer-events: auto;
+        }
+
+        .nav-item {
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 2px;
             cursor: pointer;
+            color: rgba(255, 255, 255, 0.6);
             transition: all 0.3s;
-            backdrop-filter: blur(5px);
         }
-        button:hover {
+
+        .nav-item:hover, .nav-item.active {
+            color: #FF8C00;
+            text-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+        }
+
+        #footer-status {
+            position: absolute;
+            bottom: 40px;
+            left: 60px;
+            font-size: 10px;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        #action-button {
+            position: absolute;
+            bottom: 40px;
+            right: 60px;
+            padding: 15px 35px;
+            background: rgba(255, 140, 0, 0.1);
+            border: 1px solid #FF8C00;
+            color: #FF8C00;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            pointer-events: auto;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        #action-button:hover {
             background: #FF8C00;
             color: #000;
-            box-shadow: 0 0 20px #FF8C00;
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.4);
         }
-        #status-display {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: #fff;
-            font-size: 12px;
-            letter-spacing: 1px;
-            z-index: 100;
+
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s;
         }
-        .room-label {
+
+        #progress-bar {
+            width: 200px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+            position: relative;
+        }
+
+        #progress-fill {
             position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: rgba(255, 255, 255, 0.1);
-            font-size: 8vw;
-            font-weight: 900;
-            text-transform: uppercase;
-            pointer-events: none;
-            z-index: 5;
+            height: 100%;
+            background: #FF8C00;
+            width: 0%;
+            box-shadow: 0 0 10px #FF8C00;
         }
     </style>
 </head>
 <body>
-    <div id="status-display">
-        <span style="color: #FF8C00;">●</span> HELIONYX_OS_V1.0 <br>
-        LOCATION: <span id="current-room">LOBBY</span>
+    <div id="loading-screen">
+        <div class="brand-logo">HELIONYX</div>
+        <div id="progress-bar"><div id="progress-fill"></div></div>
     </div>
 
-    <div id="nav-ui">
-        <button onclick="goToRoom('lobby')" data-testid="nav-lobby">The Lobby</button>
-        <button onclick="goToRoom('gallery')" data-testid="nav-gallery">The Gallery</button>
-        <button onclick="goToRoom('boardroom')" data-testid="nav-boardroom">The Boardroom</button>
+    <div id="ui-layer">
+        <div id="nav-header">
+            <div class="brand-logo">HELIONYX</div>
+            <div id="nav-menu">
+                <div class="nav-item active" onclick="goToRoom('lobby')" data-testid="nav-lobby">Entrance</div>
+                <div class="nav-item" onclick="goToRoom('gallery')" data-testid="nav-gallery">The Gallery</div>
+                <div class="nav-item" onclick="goToRoom('boardroom')" data-testid="nav-boardroom">The Boardroom</div>
+            </div>
+        </div>
+
+        <div id="footer-status">
+            SYSTEM_OS_V1.5 // CORE_TEMP: OPTIMAL // STATUS: SECURE_CONNECTION
+        </div>
+
+        <button id="action-button">REQUEST ACCESS</button>
     </div>
 
     <script type="importmap">
@@ -74,89 +146,169 @@
             }
         }
     </script>
+
     <script type="module">
         import * as THREE from 'three';
 
+        // ENGINE SETUP
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x000000, 0.04);
+        scene.fog = new THREE.FogExp2(0x000211, 0.05);
 
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ReinhardToneMapping;
+        renderer.toneMappingExposure = 1.2;
         document.body.appendChild(renderer.domElement);
 
-        // INFINITE GRID FLOOR
-        const grid = new THREE.GridHelper(500, 100, 0x333333, 0x111111);
-        scene.add(grid);
-
-        // ROOM COORDINATES
+        // ROOMS REGISTRY
         const rooms = {
-            lobby: { x: 0, y: 3, z: 12, target: { x: 0, y: 1, z: 0 } },
-            gallery: { x: 30, y: 5, z: 5, target: { x: 30, y: 2, z: -10 } },
-            boardroom: { x: -30, y: 4, z: -5, target: { x: -30, y: 2, z: -20 } }
+            lobby: { pos: [0, 4, 12], target: [0, 2, 0] },
+            gallery: { pos: [40, 6, 8], target: [40, 2, -15] },
+            boardroom: { pos: [-40, 5, -5], target: [-40, 2, -25] }
         };
 
-        // ASSETS: LOBBY (THE DESK)
-        const deskGeo = new THREE.BoxGeometry(8, 0.5, 4);
-        const deskMat = new THREE.MeshStandardMaterial({ color: 0xFF8C00, roughness: 0.1 });
-        const desk = new THREE.Mesh(deskGeo, deskMat);
-        desk.position.set(0, 1, 0);
-        scene.add(desk);
+        // --- ASSET CREATION ---
 
-        // ASSETS: GALLERY (PHOTO WALLS)
-        for(let i=0; i<3; i++) {
-            const wallGeo = new THREE.PlaneGeometry(6, 4);
-            const wallMat = new THREE.MeshStandardMaterial({ color: 0x0088FF, side: THREE.DoubleSide });
-            const wall = new THREE.Mesh(wallGeo, wallMat);
-            wall.position.set(25 + (i*5), 3, -15);
-            scene.add(wall);
+        // GROUND: DEEP GLASS
+        const groundGeo = new THREE.PlaneGeometry(1000, 1000);
+        const groundMat = new THREE.MeshPhysicalMaterial({ 
+            color: 0x000211, metalness: 0.9, roughness: 0.05, transmission: 0.1, reflectivity: 1 
+        });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        scene.add(ground);
+
+        // GRID OVERLAY
+        const grid = new THREE.GridHelper(500, 100, 0xFF8C00, 0x111111);
+        grid.position.y = 0.01;
+        grid.material.opacity = 0.2;
+        grid.material.transparent = true;
+        scene.add(grid);
+
+        // 1. THE LOBBY - GLASS RECEPTION DESK
+        const deskGroup = new THREE.Group();
+        
+        const deskSlabGeo = new THREE.BoxGeometry(10, 0.4, 4);
+        const glassMat = new THREE.MeshPhysicalMaterial({
+            color: 0xffffff, transmission: 0.95, roughness: 0.05, ior: 1.5, thickness: 1, specularIntensity: 1
+        });
+        const deskSlab = new THREE.Mesh(deskSlabGeo, glassMat);
+        deskSlab.position.y = 1.5;
+        deskGroup.add(deskSlab);
+
+        const baseGeo = new THREE.BoxGeometry(6, 1.5, 2);
+        const metalMat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 1, roughness: 0.2 });
+        const deskBase = new THREE.Mesh(baseGeo, metalMat);
+        deskBase.position.y = 0.75;
+        deskGroup.add(deskBase);
+
+        // Holographic Logo
+        const logoGeo = new THREE.IcosahedronGeometry(1, 0);
+        const logoMat = new THREE.MeshBasicMaterial({ color: 0xFF8C00, wireframe: true });
+        const logo = new THREE.Mesh(logoGeo, logoMat);
+        logo.position.set(0, 3, -1);
+        deskGroup.add(logo);
+
+        scene.add(deskGroup);
+
+        // 2. THE GALLERY - FLOATING FRAMES
+        const galleryGroup = new THREE.Group();
+        galleryGroup.position.x = 40;
+
+        for(let i=0; i<4; i++) {
+            const frameGeo = new THREE.BoxGeometry(8, 5, 0.2);
+            const frameMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, transmission: 0.8, roughness: 0.1 });
+            const frame = new THREE.Mesh(frameGeo, frameMat);
+            frame.position.set((i-1.5)*12, 3, -20);
+            
+            // Glowing border
+            const edges = new THREE.EdgesGeometry(frameGeo);
+            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xFF8C00 }));
+            frame.add(line);
+            
+            galleryGroup.add(frame);
         }
+        scene.add(galleryGroup);
 
-        // ASSETS: BOARDROOM (THE TABLE)
-        const tableGeo = new THREE.CylinderGeometry(4, 4, 0.5, 32);
-        const tableMat = new THREE.MeshStandardMaterial({ color: 0x8800FF });
-        const table = new THREE.Mesh(tableGeo, tableMat);
-        table.position.set(-30, 1.5, -20);
-        scene.add(table);
+        // 3. THE BOARDROOM - FLOATING MEETING TABLE
+        const boardGroup = new THREE.Group();
+        boardGroup.position.set(-40, 0, -25);
+
+        const tableGeo = new THREE.CylinderGeometry(6, 4, 0.5, 64);
+        const table = new THREE.Mesh(tableGeo, glassMat);
+        table.position.y = 2;
+        boardGroup.add(table);
+
+        const pillarGeo = new THREE.CylinderGeometry(2, 2, 2, 32);
+        const pillar = new THREE.Mesh(pillarGeo, metalMat);
+        pillar.position.y = 1;
+        boardGroup.add(pillar);
+
+        scene.add(boardGroup);
 
         // LIGHTING
         const ambient = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(ambient);
 
-        const spot = new THREE.SpotLight(0xffffff, 50);
-        spot.position.set(0, 20, 0);
-        scene.add(spot);
+        const orangeLight = new THREE.PointLight(0xFF8C00, 200, 100);
+        orangeLight.position.set(0, 10, 5);
+        scene.add(orangeLight);
 
-        // INITIAL CAMERA
-        camera.position.set(rooms.lobby.x, rooms.lobby.y, rooms.lobby.z);
-        camera.lookAt(rooms.lobby.target.x, rooms.lobby.target.y, rooms.lobby.target.z);
+        const whiteLight = new THREE.PointLight(0x0088FF, 100, 100);
+        whiteLight.position.set(40, 10, -5);
+        scene.add(whiteLight);
 
         // NAVIGATION LOGIC
         window.goToRoom = (roomKey) => {
             const room = rooms[roomKey];
-            document.getElementById('current-room').innerText = roomKey.toUpperCase();
             
-            // GSAP CAMERA FLIGHT
+            // Update UI
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelector(`[onclick="goToRoom('${roomKey}')"]`).classList.add('active');
+
+            // Fly Camera
             gsap.to(camera.position, {
-                x: room.x, y: room.y, z: room.z,
-                duration: 2, ease: "power2.inOut"
+                x: room.pos[0], y: room.pos[1], z: room.pos[2],
+                duration: 2.5, ease: "expo.inOut"
             });
-            
-            // WE NEED TO INTERPOLATE THE 'LOOK AT' POINT AS WELL
-            const currentTarget = { x: 0, y: 1, z: 0 }; // Simplified for now
+
+            const currentTarget = { x: camera.position.x, y: 0, z: 0 };
             gsap.to(currentTarget, {
-                x: room.target.x, y: room.target.y, z: room.target.z,
-                duration: 2,
+                x: room.target[0], y: room.target[1], z: room.target[2],
+                duration: 2.5,
+                ease: "expo.inOut",
                 onUpdate: () => camera.lookAt(currentTarget.x, currentTarget.y, currentTarget.z)
             });
         };
 
+        // INITIAL POSITION
+        camera.position.set(rooms.lobby.pos[0], rooms.lobby.pos[1], rooms.lobby.pos[2]);
+        camera.lookAt(rooms.lobby.target[0], rooms.lobby.target[1], rooms.lobby.target[2]);
+
+        // ANIMATION LOOP
         function animate() {
             requestAnimationFrame(animate);
+            logo.rotation.y += 0.01;
+            logo.position.y = 3 + Math.sin(Date.now() * 0.002) * 0.2;
+            
             renderer.render(scene, camera);
         }
         animate();
+
+        // LOADING SIMULATION
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 5;
+            document.getElementById('progress-fill').style.width = progress + '%';
+            if(progress >= 100) {
+                clearInterval(interval);
+                gsap.to('#loading-screen', { opacity: 0, duration: 1, onComplete: () => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                }});
+            }
+        }, 50);
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
